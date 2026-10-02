@@ -1,0 +1,15 @@
+/vendor/
+/.env
+/public/uploads/*
+!/public/uploads/.gitkeep
+/.phpunit.result.cache
+/.phpunit.cache/
+*.log
+.DS_Store
+Thumbs.db
+
+# SonarQube & coverage (dihasilkan sonar.ps1)
+/.sonar-token
+/.scannerwork/
+/coverage.xml
+/junit.xml

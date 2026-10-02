@@ -1,0 +1,37 @@
+# SonarQube lokal untuk analisis kualitas kode (dipisah dari compose.yaml utama).
+# Jangan dijalankan manual: pakai .\sonar.ps1 (atau .\run.ps1 -Sonar).
+name: inventory-sonar
+
+services:
+  # ---- Server SonarQube (Community) ----
+  sonarqube:
+    image: sonarqube:community
+    ports:
+      - "127.0.0.1:9100:9000"
+    environment:
+      # Hindari gagal start karena vm.max_map_count di sebagian host Docker
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+      - sonar_logs:/opt/sonarqube/logs
+
+  # ---- Scanner (hanya jalan saat dipanggil: compose run scanner) ----
+  scanner:
+    image: sonarsource/sonar-scanner-cli:latest
+    profiles: ["scan"]
+    depends_on:
+      - sonarqube
+    environment:
+      SONAR_HOST_URL: http://sonarqube:9000
+      # Token diambil dari environment host (diisi oleh sonar.ps1), tidak disimpan di file ini
+      SONAR_TOKEN:
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    command: ["-Dsonar.projectBaseDir=/var/www/html", "-Dsonar.qualitygate.wait=true"]
+
+volumes:
+  sonar_data:
+  sonar_extensions:
+  sonar_logs:

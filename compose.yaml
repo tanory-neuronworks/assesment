@@ -1,0 +1,55 @@
+# Menjalankan aplikasi (PHP + Apache) dan database (MySQL) sekaligus.
+# Jalankan: docker compose up --build -d   (atau .\run.ps1)
+
+services:
+  # ---- Aplikasi web ----
+  app:
+    # Build dari Dockerfile di folder ini, hasilnya diberi nama image berikut
+    build: .
+    image: inventory-app:latest
+    # Akses di http://localhost:8080 (host:container)
+    ports:
+      - "8080:80"
+    # Variabel lingkungan (koneksi DB, dll) dibaca dari file .env
+    env_file:
+      - .env
+    volumes:
+      # Mount source code supaya perubahan kode langsung terlihat tanpa rebuild
+      - .:/var/www/html
+      # Volume anonim: jaga folder vendor dari image agar tidak tertimpa mount di atas
+      - /var/www/html/vendor
+    # Tunggu MySQL sampai healthy dulu sebelum app dijalankan
+    depends_on:
+      mysql:
+        condition: service_healthy
+    # Nyalakan ulang otomatis kecuali dihentikan manual
+    restart: unless-stopped
+
+  # ---- Database ----
+  mysql:
+    image: mysql:8.0
+    # Kredensial & nama database diambil dari .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    ports:
+      # Hanya bisa diakses dari komputer sendiri (127.0.0.1), tidak terbuka ke jaringan
+      - "127.0.0.1:3306:3306"
+    volumes:
+      # Data database disimpan di volume agar tidak hilang saat container dihapus
+      - db_data:/var/lib/mysql
+      # Skema + data awal otomatis dijalankan HANYA saat volume masih kosong (first run)
+      - ./database/schema-and-seed.sql:/docker-entrypoint-initdb.d/01-schema-and-seed.sql
+    # Dipakai oleh depends_on di service app
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+# Volume bernama untuk data MySQL (hapus dengan: docker compose down -v)
+volumes:
+  db_data:

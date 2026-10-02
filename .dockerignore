@@ -1,0 +1,39 @@
+# File yang TIDAK ikut disalin ke image saat "COPY . ." di Dockerfile.
+# Tujuan: image lebih kecil, build lebih cepat, dan tidak membawa data sensitif.
+
+# Riwayat git & konfigurasi editor/tool lokal
+.git
+.gitignore
+.claude
+
+# Secret & konfigurasi lokal (jangan sampai masuk image; dibaca lewat env_file di compose)
+.env
+.env.example
+
+# Cache PHPUnit
+.phpunit.cache
+.phpunit.result.cache
+
+# Dependency di-install ulang di dalam image via "composer install"
+vendor
+
+# Upload user tidak dibawa ke image, tapi folder tetap ada lewat .gitkeep
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Test, dokumentasi, log, dan script lokal tidak dibutuhkan saat runtime
+tests
+*.md
+*.log
+*.ps1
+
+# File build itu sendiri
+Dockerfile
+compose.yaml
+
+# Hasil analisis SonarQube tidak perlu masuk image
+compose.sonar.yaml
+sonar-project.properties
+coverage.xml
+junit.xml
+.scannerwork
