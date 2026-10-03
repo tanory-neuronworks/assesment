@@ -1,26 +1,54 @@
 # Inventory & Order Management System
 
-## **🚀 QUICK START (PowerShell)**
+## **🚀 QUICK START**
 
-### **▶ Jalankan aplikasi**
+Butuh **Docker Desktop** saja. Pilih sesuai OS:
+
+### **🪟 Windows (PowerShell)**
+
+**▶ Jalankan aplikasi**
 
 ```powershell
 .\run.ps1
 ```
 
-### **▶ Jalankan aplikasi + SonarQube**
+**▶ Jalankan aplikasi + SonarQube**
 
 ```powershell
 .\run.ps1 -Sonar
 ```
 
-**Analisis SonarQube saja (tanpa menjalankan app):**
+**▶ Analisis SonarQube saja (tanpa menjalankan app)**
 
 ```powershell
 .\sonar.ps1
 ```
 
-Opsi: `-SkipTests`, `-NoBrowser`, `-Down`. **Dashboard SonarQube: http://localhost:9100**
+Opsi `sonar.ps1`: `-SkipTests`, `-NoBrowser`, `-Down`.
+
+### **🍎 macOS / 🐧 Linux (bash)**
+
+**▶ Jalankan aplikasi**
+
+```bash
+./run.sh
+```
+
+**▶ Jalankan aplikasi + SonarQube**
+
+```bash
+./run.sh --sonar
+```
+
+**▶ Analisis SonarQube saja (tanpa menjalankan app)**
+
+```bash
+./sonar.sh
+```
+
+Opsi `sonar.sh`: `--skip-tests`, `--no-browser`, `--down`. Kalau muncul `permission denied`, jalankan sekali: `chmod +x run.sh sonar.sh`.
+
+**Aplikasi: http://localhost:8080** · **Dashboard SonarQube: http://localhost:9100**
 
 Web app manajemen inventori & order multi-gudang, 3 role (Admin, Sales, Warehouse Staff). PHP 8.2+ native OOP berlapis (Controller → Service → Repository), MySQL 8, Vanilla JS, Docker Compose.
 
